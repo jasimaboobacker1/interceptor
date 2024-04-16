@@ -1,4 +1,5 @@
-import { HttpInterceptorFn } from '@angular/common/http';
+import { HttpErrorResponse, HttpInterceptorFn } from '@angular/common/http';
+import { catchError, throwError } from 'rxjs';
 
 export const httpreqInterceptor: HttpInterceptorFn = (req, next) => {
     const myToken=localStorage.getItem('token');
@@ -7,5 +8,16 @@ export const httpreqInterceptor: HttpInterceptorFn = (req, next) => {
         Authorisation:`Bearer ${myToken}`
       }
     })
-  return next(clonerequest);
+  return next(clonerequest).pipe(
+    catchError((error: HttpErrorResponse) => {
+      if (error.status === 401) {
+        console.log(error);
+        
+      } else if (error.status === 500) {
+       
+      } else {
+      }
+      return throwError(error);
+    })
+  );
 };
